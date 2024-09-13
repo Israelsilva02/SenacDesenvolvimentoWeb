@@ -20,3 +20,29 @@ public class Atividade {
 }
 
 
+@Test
+    public void testMissingFields() {
+        // Simulando o plainLegacySession faltando campos
+        String plainLegacySession = "{"
+                + "\"listaUsuario\": [{\"name\": \"John Doe\"}],"
+                + "\"loginAD\": \"john.doe\""
+                + "}";
+
+        // Executando o código que será testado
+        myClass.processSession(plainLegacySession);
+
+        // Verificando se os logs foram registrados corretamente
+        verify(log).info("PASSOU parameter: null userName: John Doe collaboratorType: null login: john.doe");
+    }
+
+    @Test
+    public void testExceptionHandling() {
+        // Simulando uma exceção no JsonPath
+        String plainLegacySession = "{invalid json}";
+
+        // Executando o código que será testado
+        myClass.processSession(plainLegacySession);
+
+        // Verificando se os valores padrão foram aplicados e o log de erro foi chamado
+        verify(log).error(eq("Erro ao processar sessão"), anyString(), any());
+    }
