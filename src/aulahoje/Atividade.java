@@ -21,28 +21,60 @@ public class Atividade {
 
 
 @Test
-    public void testMissingFields() {
-        // Simulando o plainLegacySession faltando campos
+    public void testAllFieldsPresent() {
+        // JSON de sessão com todos os campos presentes
+        String plainLegacySession = "{"
+                + "\"matricula\": \"12345\","
+                + "\"listaUsuario\": [{\"name\": \"John Doe\"}],"
+                + "\"contributorType\": \"COLLABORATOR\","
+                + "\"loginAD\": \"john.doe\","
+                + "\"encryptedData\": {\"encryptedObject\": \"encryptedValue\"}"
+                + "}";
+
+        // Executa o método que estamos testando
+        myClass.processSession(plainLegacySession);
+
+        // Verifica se o log foi gerado com os valores corretos
+        verify(log).info("PASSOU parameter: 12345 userName: John Doe collaboratorType: COLLABORATOR login: john.doe");
+        // Também podemos verificar se o campo "parameter" não foi alterado para "BATCH"
+    }
+
+    @Test
+    public void testMissingFieldsButNoException() {
+        // JSON de sessão com alguns campos ausentes, mas o código deve lidar sem exceção
         String plainLegacySession = "{"
                 + "\"listaUsuario\": [{\"name\": \"John Doe\"}],"
                 + "\"loginAD\": \"john.doe\""
                 + "}";
 
-        // Executando o código que será testado
+        // Executa o método
         myClass.processSession(plainLegacySession);
 
-        // Verificando se os logs foram registrados corretamente
+        // Verifica o log gerado com campos ausentes
         verify(log).info("PASSOU parameter: null userName: John Doe collaboratorType: null login: john.doe");
     }
 
     @Test
-    public void testExceptionHandling() {
-        // Simulando uma exceção no JsonPath
-        String plainLegacySession = "{invalid json}";
+    public void testJsonWithException() {
+        // JSON inválido para simular uma exceção
+        String plainLegacySession = "{ invalid json }"; 
 
-        // Executando o código que será testado
+        // Executa o método
         myClass.processSession(plainLegacySession);
 
-        // Verificando se os valores padrão foram aplicados e o log de erro foi chamado
+        // Verifica se o valor de "parameter" foi definido como "BATCH"
+        // E se o log de erro foi registrado corretamente
+        verify(log).error(eq("Erro ao processar sessão"), anyString(), any());
+    }
+
+    @Test
+    public void testNullSessionHandling() {
+        // Simulando o caso de JSON nulo ou vazio
+        String plainLegacySession = null;
+
+        // Executa o método
+        myClass.processSession(plainLegacySession);
+
+        // Verifica se a exceção foi capturada e o log de erro foi registrado
         verify(log).error(eq("Erro ao processar sessão"), anyString(), any());
     }
