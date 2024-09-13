@@ -20,16 +20,3 @@ public class Atividade {
 }
 
 
-try {
-					parameter = JsonPath.read(plainLegacySession, "matricula");
-					userName =  JsonPath.read(plainLegacySession, "$.listaUsuario[0].name");
-					collaboratorType = JsonPath.read(plainLegacySession, "contributorType");
-					login =  JsonPath.read(plainLegacySession, "loginAD");
-					encryptedObject = JsonPath.read(plainLegacySession, "encryptedData.encryptedObject");
-					log.info(String.format("PASSOU parameter: %s userName: %s collaboratorType: %s login: %s",
-							parameter, userName, collaboratorType, login));
-
-				} catch (Exception ex) {
-					parameter = "BATCH";
-					log.error(ERROR_SESSION_INFO, ex.getMessage(), ex.getCause());
-				}
